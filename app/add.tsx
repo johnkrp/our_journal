@@ -20,22 +20,16 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppColors } from "../constants/design";
 import { supabase } from "../lib/supabase";
+import { getErrorMessage } from "../lib/errors";
 
 type LocalPhoto = {
   id: string;
   uri: string;
 };
 
-const colors = {
-  bg: "#FFF1F2",
-  card: "#FFFFFF",
-  accent: "#ec4899",
-  accentDark: "#be185d",
-  text: "#111827",
-  subtext: "#6b7280",
-  border: "#f5d0ea",
-};
+const colors = AppColors;
 
 function isValidISODate(s: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(s);
@@ -74,8 +68,8 @@ export default function Add() {
   const [keyword, setKeyword] = useState(params.keyword ?? "");
 
   // lat/lng κρατιούνται “κρυφά”, απλά για αποθήκευση
-  const [lat, setLat] = useState(params.lat ?? "");
-  const [lng, setLng] = useState(params.lng ?? "");
+  const [lat] = useState(params.lat ?? "");
+  const [lng] = useState(params.lng ?? "");
 
   const [photos, setPhotos] = useState<LocalPhoto[]>([]);
   const [busy, setBusy] = useState(false);
@@ -275,7 +269,7 @@ export default function Add() {
           .update(payload)
           .eq("id", params.id)
           .eq("author_id", user.id)
-          .select("*")
+          .select("id")
           .single();
 
         if (postErr) throw postErr;
@@ -288,7 +282,7 @@ export default function Add() {
             author_id: user.id,
             ...payload,
           })
-          .select("*")
+          .select("id")
           .single();
 
         if (postErr) throw postErr;
@@ -310,9 +304,9 @@ export default function Add() {
         Alert.alert("Saved", "Η ανάμνηση αποθηκεύτηκε 💗");
         router.replace("/my-posts");
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.log("SAVE ERROR:", e);
-      const msg = e?.message || "Κάτι πήγε στραβά.";
+      const msg = getErrorMessage(e, "Κάτι πήγε στραβά.");
       setError(msg);
       Alert.alert("Error", msg);
     } finally {
@@ -783,7 +777,7 @@ export default function Add() {
                 paddingHorizontal: 10,
                 paddingTop: 12,
                 paddingBottom: 20,
-                backgroundColor: "FFE4EF",
+                backgroundColor: "#FFE4EF",
                 marginTop: 10,
                 marginHorizontal: 12,
                 borderRadius: 18,
@@ -813,3 +807,4 @@ export default function Add() {
     </SafeAreaView>
   );
 }
+

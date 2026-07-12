@@ -13,19 +13,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppColors } from "../constants/design";
+import { getErrorMessage } from "../lib/errors";
 import { supabase } from "../lib/supabase";
 
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-
-const colors = {
-  bg: "#FFF1F2",
-  card: "#FFFFFF",
-  accent: "#ec4899",
-  accentDark: "#be185d",
-  text: "#111827",
-  subtext: "#6b7280",
-  border: "#f5d0ea",
-};
+const colors = AppColors;
 
 type Post = {
   id: string;
@@ -204,14 +196,14 @@ export default function MyPostsScreen() {
     try {
       const { data, error } = await supabase
         .from("posts")
-        .select("*")
+        .select("id, title, body, visited_at, created_at, place_name, address, cover_url, keyword")
         .order("visited_at", { ascending: false })
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       setPosts((data || []) as Post[]);
-    } catch (e: any) {
-      setError(e?.message || "Κάτι πήγε στραβά.");
+    } catch (e: unknown) {
+      setError(getErrorMessage(e, "Κάτι πήγε στραβά."));
     } finally {
       setLoading(false);
     }
@@ -294,7 +286,19 @@ export default function MyPostsScreen() {
           Κοίτα που έχουμε πάει! 😍
         </Text>
 
-        <View style={{ width: 20 }} />
+        <Pressable
+          onPress={() => router.push("/timeline")}
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderRadius: 999,
+            backgroundColor: "rgba(255,255,255,0.2)",
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 12 }}>
+            Timeline
+          </Text>
+        </Pressable>
       </View>
 
       {/* FILTER BAR (INLINE, not as nested component) */}
@@ -512,12 +516,11 @@ export default function MyPostsScreen() {
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
                 renderItem={({ item }) => {
-                  let thumbUrl: string | null = null;
-
-                  if (item.cover_url) {
-                    const path = item.cover_url.replace(/^\/+/, "");
-                    thumbUrl = `${SUPABASE_URL}/storage/v1/object/public/photos/${path}`;
-                  }
+                  const thumbUrl = item.cover_url
+                    ? supabase.storage
+                        .from("photos")
+                        .getPublicUrl(item.cover_url).data.publicUrl
+                    : null
 
                   return (
                     <MemoryCard
@@ -540,3 +543,5 @@ export default function MyPostsScreen() {
     </SafeAreaView>
   );
 }
+
+

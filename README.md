@@ -1,57 +1,61 @@
-# Welcome to your Expo app 👋
+# Our Journal
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Private React Native app (Expo + Supabase) for tracking memories and future trip ideas.
 
-## Get started
+## Stack
 
-1. Install dependencies
+- Expo Router (file-based navigation)
+- React Native + TypeScript
+- Supabase (auth, database, storage)
+- Google Places + map-based browsing
 
-   ```bash
-   npm install
-   ```
+## Prerequisites
 
-2. Start the app
+- Node.js 20+
+- npm
+- Expo Go app on your phone
 
-   ```bash
-   npx expo start
-   ```
+## Environment Variables
 
-In the output, you'll find options to open the app in a
+Create `.env` in the project root:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```env
+EXPO_PUBLIC_SUPABASE_URL=...
+EXPO_PUBLIC_SUPABASE_ANON_KEY=...
+EXPO_PUBLIC_ALLOWED_UIDS=uid1,uid2
+EXPO_PUBLIC_GOOGLE_MAPS_KEY=...
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Run (Lightweight, Recommended)
 
-## Learn more
+```bash
+npm install
+npx expo start --go --lan
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Then open the shown `exp://...` URL in Expo Go, or scan the QR code.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Optional Native Build
 
-## Join the community
+Use this only when you need native modules not supported by Expo Go:
 
-Join our community of developers creating universal apps.
+```bash
+npm run android
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-"# OurJournal" 
-"# our-journal" 
-"# OurJournal" 
-# our_journal
-# our_journal
+This path uses Gradle/Java and is heavier on CPU/RAM.
 
-<!-- meaningless-change-marker -->
+## Project Structure
+
+- `app/`: screens and routes
+- `components/`: reusable UI
+- `lib/`: Supabase and app config helpers
+- `assets/`: images and icons
+
+## Scripts
+
+- `npm run start`: start Expo dev server
+- `npm run android`: run Android native build
+- `npm run ios`: run iOS native build
+- `npm run web`: run web target
+- `npm run lint`: run lint checks

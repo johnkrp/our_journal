@@ -11,17 +11,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppColors } from "../constants/design";
+import { getErrorMessage } from "../lib/errors";
 import { supabase } from "../lib/supabase";
 
-const colors = {
-  bg: "#FFF1F2",
-  card: "#FFFFFF",
-  accent: "#ec4899",
-  accentDark: "#be185d",
-  text: "#111827",
-  subtext: "#6b7280",
-  border: "#f5d0ea",
-};
+const colors = AppColors;
 
 type Dream = {
   id: string;
@@ -49,14 +43,14 @@ export default function DreamsScreen() {
     try {
       const { data, error } = await supabase
         .from("dreams")
-        .select("*")
+        .select("id, place_name, address, lat, lng, created_at, keyword")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       setDreams((data || []) as Dream[]);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.log("DREAMS ERROR:", e);
-      setErr(e?.message || "Κάτι πήγε στραβά.");
+      setErr(getErrorMessage(e, "Κάτι πήγε στραβά."));
     } finally {
       setLoading(false);
     }
@@ -87,7 +81,7 @@ export default function DreamsScreen() {
       const { error } = await supabase.from("dreams").delete().eq("id", id);
       if (error) throw error;
       setDreams((prev) => prev.filter((d) => d.id !== id));
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.log("DELETE DREAM ERROR:", e);
     }
   };
@@ -509,3 +503,4 @@ export default function DreamsScreen() {
     </SafeAreaView>
   );
 }
+

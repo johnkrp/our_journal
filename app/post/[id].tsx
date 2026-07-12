@@ -16,16 +16,12 @@ import {
 } from "react-native";
 import MapView, { Marker, Region } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppColors } from "../../constants/design";
 import { supabase } from "../../lib/supabase";
 
 const colors = {
+  ...AppColors,
   bg: "#FFE4ED",
-  card: "#FFFFFF",
-  accent: "#ec4899",
-  accentDark: "#be185d",
-  text: "#111827",
-  subtext: "#6b7280",
-  border: "#f5d0ea",
 };
 
 type Post = {
@@ -108,7 +104,7 @@ export default function PostScreen() {
     };
 
     load();
-  }, [id]);
+  }, [id, router]);
 
   if (!id) {
     return (

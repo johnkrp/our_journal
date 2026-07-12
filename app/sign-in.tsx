@@ -5,11 +5,12 @@ import {
   Text,
   TextInput,
   Pressable,
-  ActivityIndicator,
-  Alert,
+  ActivityIndicator
 } from "react-native";
+import { AppColors, Radius, Spacing } from "../constants/design";
 import { supabase, ALLOWED_UIDS } from "../lib/supabase";
 import { router } from "expo-router";
+import { getErrorMessage } from "../lib/errors";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -55,8 +56,8 @@ export default function SignIn() {
 
       // Πήγαινε στην αρχική
       router.replace("/");
-    } catch (e: any) {
-      setMsg(e?.message || "Κάτι πήγε στραβά.");
+    } catch (e: unknown) {
+      setMsg(getErrorMessage(e, "Sign in failed."));
     } finally {
       setBusy(false);
     }
@@ -66,15 +67,15 @@ export default function SignIn() {
     <View
       style={{
         flex: 1,
-        padding: 20,
-        gap: 12,
+        padding: Spacing.lg,
+        gap: Spacing.md,
         alignItems: "stretch",
         justifyContent: "center",
-        backgroundColor: "#fff",
+        backgroundColor: AppColors.card,
       }}
     >
       <Text style={{ fontSize: 26, fontWeight: "800" }}>Our Journal 💜</Text>
-      <Text style={{ color: "gray", marginBottom: 8 }}>
+      <Text style={{ color: AppColors.subtext, marginBottom: Spacing.sm }}>
         Private login (2 users only)
       </Text>
 
@@ -90,9 +91,9 @@ export default function SignIn() {
         onChangeText={setEmail}
         style={{
           borderWidth: 1,
-          borderColor: "#ddd",
-          padding: 12,
-          borderRadius: 10,
+          borderColor: AppColors.border,
+          padding: Spacing.md,
+          borderRadius: Radius.sm,
         }}
       />
 
@@ -104,9 +105,9 @@ export default function SignIn() {
           onChangeText={setPassword}
           style={{
             borderWidth: 1,
-            borderColor: "#ddd",
-            padding: 12,
-            borderRadius: 10,
+            borderColor: AppColors.border,
+            padding: Spacing.md,
+            borderRadius: Radius.sm,
             paddingRight: 70,
           }}
         />
@@ -131,9 +132,9 @@ export default function SignIn() {
         style={{
           backgroundColor: "#111",
           padding: 14,
-          borderRadius: 12,
+          borderRadius: Radius.md,
           alignItems: "center",
-          marginTop: 6,
+          marginTop: Spacing.sm,
         }}
       >
         {busy ? (
@@ -145,3 +146,5 @@ export default function SignIn() {
     </View>
   );
 }
+
+

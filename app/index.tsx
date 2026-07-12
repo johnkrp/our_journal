@@ -19,19 +19,14 @@ import {
 } from "react-native";
 import MapView, { Marker, Region } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppColors } from "../constants/design";
 import { supabase } from "../lib/supabase";
+import { GOOGLE_MAPS_KEY } from "../lib/config";
+import { getErrorMessage } from "../lib/errors";
 
-const GOOGLE_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY!;
+const GOOGLE_KEY = GOOGLE_MAPS_KEY;
 
-const colors = {
-  bg: "#FFF1F2",
-  card: "#FFFFFF",
-  accent: "#ec4899",
-  accentDark: "#be185d",
-  text: "#111827",
-  subtext: "#6b7280",
-  border: "#f5d0ea",
-};
+const colors = AppColors;
 
 type Place = {
   place_id: string;
@@ -59,6 +54,21 @@ type MemoryPin = {
 };
 
 type DreamPin = {
+  id: string;
+  place_name: string | null;
+  lat: number;
+  lng: number;
+};
+
+type PostPinRow = {
+  id: string;
+  title: string | null;
+  place_name: string | null;
+  lat: number;
+  lng: number;
+};
+
+type DreamPinRow = {
   id: string;
   place_name: string | null;
   lat: number;
@@ -121,7 +131,7 @@ export default function MapScreen() {
         console.log("Location error:", e);
       }
     })();
-  }, []);
+  }, [headerAnim, mapAnim, recentAnim, searchAnim]);
 
   // start animations on mount
   useEffect(() => {
@@ -154,7 +164,7 @@ export default function MapScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [headerAnim, mapAnim, recentAnim, searchAnim]);
 
   // όταν αλλάζουν τα posts, γύρνα την gallery στην αρχή
   useEffect(() => {
@@ -230,7 +240,7 @@ export default function MapScreen() {
         .not("lng", "is", null);
 
       if (!postsErr && postsData) {
-        const pins: MemoryPin[] = postsData.map((p: any) => ({
+        const pins: MemoryPin[] = (postsData as PostPinRow[]).map((p) => ({
           id: p.id,
           title: p.title,
           place_name: p.place_name,
@@ -248,7 +258,7 @@ export default function MapScreen() {
         .not("lng", "is", null);
 
       if (!dreamsErr && dreamsData) {
-        const pins: DreamPin[] = dreamsData.map((d: any) => ({
+        const pins: DreamPin[] = (dreamsData as DreamPinRow[]).map((d) => ({
           id: d.id,
           place_name: d.place_name,
           lat: d.lat,
@@ -402,9 +412,9 @@ export default function MapScreen() {
       setSelected(null);
       setResults([]);
       setQuery("");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.log("ADD DREAM ERROR:", e);
-      Alert.alert("Error", e?.message || "Κάτι πήγε στραβά.");
+      Alert.alert("Error", getErrorMessage(e, "Κάτι πήγε στραβά."));
     }
   };
 
@@ -477,7 +487,20 @@ export default function MapScreen() {
                   textDecorationLine: "underline",
                 }}
               >
-                Πάρε ιδέες 💭
+                Dreams 💭
+              </Text>
+            </Pressable>
+
+            <Pressable onPress={() => router.push("/timeline")}>
+              <Text
+                style={{
+                  color: colors.accentDark,
+                  fontSize: 13,
+                  marginTop: 2,
+                  textDecorationLine: "underline",
+                }}
+              >
+                Timeline 🗓️
               </Text>
             </Pressable>
           </View>
@@ -1116,3 +1139,5 @@ export default function MapScreen() {
     </SafeAreaView>
   );
 }
+
+
